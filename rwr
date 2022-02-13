@@ -3,3 +3,7 @@
 ################################
 
 ### This function calculates the Rarity-Weighted Richness (Albuquerque & Beier 2015; https://doi.org/10.1371/journal.pone.0119905)
+
+test = function(x){
+  x+1
+}

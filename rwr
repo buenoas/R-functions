@@ -4,6 +4,32 @@
 
 ### This function calculates the Rarity-Weighted Richness (Albuquerque & Beier 2015; https://doi.org/10.1371/journal.pone.0119905)
 
-test = function(x){
-  x+1
+rwr = function(comm) {
+  
+  # Site-by-species presence-absence matrix
+  comm.pa = ifelse(comm > 0, 1, 0)
+  
+  # Species representation across all sites
+  species.repres = colSums(comm.pa)
+  
+  # Rarity index of each species
+  species.rarity = 1 / species.repres
+  
+  # Transpose the 'comm.pa' matrix
+  # (species as rows and sites as columns)
+  comm.pa.t = t(comm.pa)
+  
+  # Multiple species by their respective rarity index
+  comm.pa.t.rarity = comm.pa.t * species.rarity
+  
+  # Transpose the 'comm.pa.t.rarity' matrix
+  # (species as columns and sites as rows)
+  comm.pa.rarity = t(comm.pa.t.rarity)
+  
+  # Calculate the rarity-weighted richness of each site
+  rwr = rowSums(comm.pa.rarity)
+  
+  # Output
+  return(rwr)
+  
 }

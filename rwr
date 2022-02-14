@@ -2,7 +2,8 @@
 ### Rarity-Weighted Richness ###
 ################################
 
-### This function calculates the Rarity-Weighted Richness (Albuquerque & Beier 2015; https://doi.org/10.1371/journal.pone.0119905)
+### This function calculates the Rarity-Weighted Richness (RWR)
+# Reference: Albuquerque & Beier (2015) <https://doi.org/10.1371/journal.pone.0119905>
 
 rwr = function(comm) {
   

@@ -1,6 +1,6 @@
-#############################################################################################
-### Species accumulation curve based on site increasing order of rarity-weighted richness ###
-#############################################################################################
+####################################################################
+### Species accumulation curve based on rarity-weighted richness ###
+####################################################################
 
 rarity_algo = function(x) {
   
@@ -20,7 +20,7 @@ rarity_algo = function(x) {
                             decreasing = TRUE), ]
   rwrSiteOrder = as.numeric(rownames(rwrOrder))
   
-  # Species accumulation curve based on site increasing order of rarity-weighted richness
+  # Species accumulation curve based on rarity-weighted richness
   commAccum = specaccum(comm[rwrSiteOrder,],
                         method = "collector")
   plot(commAccum$sites, 

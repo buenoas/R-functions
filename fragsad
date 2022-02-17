@@ -1,7 +1,3 @@
-#########################################################################
-### Function to create a site-by-species matrix from FragSAD database ###
-#########################################################################
-
 fragsad = function(x) {
   
   fragsad.abundances = read.csv("abundances_utf8.csv",
@@ -26,7 +22,7 @@ fragsad = function(x) {
   fragsad[, which(grepl(".1", names(fragsad)))] = NULL
   fragsad$ID = NULL
   
-  dat = subset(fragsad, refshort == studyID)
+  dat = subset(fragsad, refshort == x)
   
   # Site-by-species abundance matrix
   dat.mx = tapply(dat$abundance, list(dat$site_id, dat$scientific_name), sum)
@@ -44,16 +40,16 @@ fragsad = function(x) {
   area = as.numeric(dat$site_size[match(rownames(dat.mx), dat$site_id)])
   
   # Matrix category
-  matrix = unique(subset(fragsad.metadata, refshort == study)$matrix_category)
+  matrix = unique(subset(fragsad.metadata, refshort == x)$matrix_category)
   
   # Species groups (taxon)
-  taxon = unique(subset(fragsad.metadata, refshort == study)$taxa)
+  taxon = unique(subset(fragsad.metadata, refshort == x)$taxa)
   
   return(list(community = dat.mx,
               species_richness = richness,
               patch_area = area,
               taxon = taxon,
               matrix = matrix,
-              studyID = studyID))
+              studyID = x))
   
 }

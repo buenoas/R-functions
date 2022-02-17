@@ -1,0 +1,61 @@
+#########################################################################
+### Function to create a site-by-species matrix from FragSAD database ###
+#########################################################################
+
+fragsad = function(x) {
+  
+  fragsad.abundances = read.csv("abundances_utf8.csv",
+                                encoding = "UTF-8")
+  
+  fragsad.metadata = read.csv("metadata_utf8.csv",
+                              encoding = "UTF-8")
+  
+  fragsad.abundances$ID = paste(fragsad.abundances$refshort,
+                                fragsad.abundances$site_id,
+                                fragsad.abundances$plot_id,
+                                sep = "_")
+  
+  fragsad.metadata$ID = paste(fragsad.metadata$refshort,
+                              fragsad.metadata$site_id,
+                              fragsad.metadata$plot_id,
+                              sep = "_")
+  
+  fragsad = data.frame(fragsad.abundances,
+                       fragsad.metadata[match(fragsad.abundances$ID,fragsad.metadata$ID), ])
+  
+  fragsad[, which(grepl(".1", names(fragsad)))] = NULL
+  fragsad$ID = NULL
+  
+  ref = x
+  
+  dat = subset(fragsad, refshort == ref)
+  
+  # Site-by-species abundance matrix
+  dat.mx = tapply(dat$abundance, list(dat$site_id, dat$scientific_name), sum)
+  
+  # Species non detected in a given site are real zeros
+  dat.mx[is.na(dat.mx)] = 0
+  
+  # Convert the matrix in a data.frame
+  dat.mx = as.data.frame(dat.mx)
+  
+  # Calculate species richness
+  richness = rowSums(ifelse(dat.mx > 0, 1, 0))
+  
+  # Patch size (area)
+  area = as.numeric(dat$site_size[match(rownames(dat.mx), dat$site_id)])
+  
+  # Matrix category
+  matrix = unique(subset(fragsad.metadata, refshort == study)$matrix_category)
+  
+  # Species groups (taxon)
+  taxon = unique(subset(fragsad.metadata, refshort == study)$taxa)
+  
+  return(list(community = dat.mx,
+              species_richness = richness,
+              patch_area = area,
+              taxon = taxon,
+              matrix = matrix,
+              study = x))
+  
+}

@@ -26,9 +26,7 @@ fragsad = function(x) {
   fragsad[, which(grepl(".1", names(fragsad)))] = NULL
   fragsad$ID = NULL
   
-  ref = x
-  
-  dat = subset(fragsad, refshort == ref)
+  dat = subset(fragsad, refshort == studyID)
   
   # Site-by-species abundance matrix
   dat.mx = tapply(dat$abundance, list(dat$site_id, dat$scientific_name), sum)
@@ -56,6 +54,6 @@ fragsad = function(x) {
               patch_area = area,
               taxon = taxon,
               matrix = matrix,
-              study = x))
+              studyID = studyID))
   
 }

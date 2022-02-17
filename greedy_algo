@@ -1,0 +1,51 @@
+###################################################################
+### Species accumulation curve based on species complementarity ###
+###################################################################
+
+greedy_algo = function(x) {
+  
+  # Comm data
+  comm = x$community
+  comm.rich = x$community
+  
+  # Replace row names with row numbers
+  rownames(comm) = 1:nrow(comm)
+  rownames(comm.rich) = 1:nrow(comm.rich)
+  
+  # Load the function "minimum.set" (by CS Dambros)
+  source("https://raw.githubusercontent.com/csdambros/R-functions/master/minimum.set")
+  
+  # Order sites in decreasing order of additional species
+  richOrder = minimum.set(comm.rich)
+  
+  # Species accumulation curve based on species complementarity
+  commAccum = specaccum(richOrder,
+                        method = "collector")
+  plot(commAccum$sites, 
+       commAccum$richness,
+       xaxt = "n",
+       yaxt = "n",
+       ylim = c(0, ncol(comm) + 1),
+       xlab = "Site order",
+       ylab = "Cumulative number of species",
+       pch = 16, cex = 1.2,
+       main = "Site selecion based on the Greedy Algorithm")
+  axis(1, at = 1:nrow(comm),
+       labels = as.numeric(rownames(richOrder)))
+  axis(2, at = seq(0, ncol(comm), 5))
+  
+  lines(commAccum$sites, commAccum$richness)
+  
+  # Minimum set: minimum number of sites needed to represent all species
+  minimumSet = min(which(commAccum$richness == max(commAccum$richness)))
+  
+  abline(v = minimumSet, col = "blue")
+  text(0.25, 0.5, pos = 4, col = "blue",
+       paste0("Minimum set = ", minimumSet, " sites (",
+              round(minimumSet/nrow(comm)*100), "%)"))
+  
+  return(data.frame(total_sites = nrow(comm),
+                    minimum_set = minimumSet,
+                    percentage_sites = round(minimumSet/nrow(comm)*100)))
+  
+}

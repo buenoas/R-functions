@@ -11,7 +11,7 @@ sar = function(x) {
   z_value = as.numeric(round(mod$coefficients[2], 3))
   
   # Plot title
-  plot.title = paste0(x$study, " | ", x$taxon, " | ", x$matrix,
+  plot.title = paste0(x$studyID, " | ", x$taxon, " | ", x$matrix,
                       "\nz-value = ", z_value)
   
   # Plot
@@ -25,7 +25,7 @@ sar = function(x) {
          pch = 21, cex = 1.5,
          bg = "grey", col = "black")
   
-  return(as.data.frame(t(cbind(study = x$study,
+  return(as.data.frame(t(cbind(studyID = x$studyID,
                                z_value,
                                taxon = x$taxon,
                                matrix = x$matrix))))

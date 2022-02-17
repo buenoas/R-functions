@@ -1,0 +1,33 @@
+###########################################################################
+### Function to produce a species-area curve using the FragSAD database ###
+###########################################################################
+
+sar = function(x) {
+  
+  # Regression model
+  mod = lm(log(x$species_richness) ~ log(x$patch_area))
+  
+  # Z-value
+  z_value = as.numeric(round(mod$coefficients[2], 3))
+  
+  # Plot title
+  plot.title = paste0(x$study, " | ", x$taxon, " | ", x$matrix,
+                      "\nz-value = ", z_value)
+  
+  # Plot
+  plot(log(x$species_richness) ~ log(x$patch_area),
+       type = "n",
+       main = plot.title,
+       xlab = "log Patch area (hectares)",
+       ylab = "log Number of species")
+  abline(mod, lwd = 2)
+  points(log(x$species_richness) ~ log(x$patch_area),
+         pch = 21, cex = 1.5,
+         bg = "grey", col = "black")
+  
+  return(as.data.frame(t(cbind(study = x$study,
+                               z_value,
+                               taxon = x$taxon,
+                               matrix = x$matrix))))
+  
+}

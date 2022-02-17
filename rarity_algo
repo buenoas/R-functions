@@ -1,0 +1,53 @@
+#############################################################################################
+### Species accumulation curve based on site increasing order of rarity-weighted richness ###
+#############################################################################################
+
+rarity_algo = function(x) {
+  
+  # Comm data
+  comm = x$community
+  comm.rwr = x$community
+  
+  # Replace row names with row numbers
+  rownames(comm) = 1:nrow(comm)
+  rownames(comm.rwr) = 1:nrow(comm.rwr)
+  
+  # Rarity-Weighted Richness per site
+  comm.rwr$rwrSite = rwr(comm.rwr)
+  
+  # Order sites in decreasing order of rwr
+  rwrOrder = comm.rwr[order(comm.rwr$rwrSite,
+                            decreasing = TRUE), ]
+  rwrSiteOrder = as.numeric(rownames(rwrOrder))
+  
+  # Species accumulation curve based on site increasing order of rarity-weighted richness
+  commAccum = specaccum(comm[rwrSiteOrder,],
+                        method = "collector")
+  plot(commAccum$sites, 
+       commAccum$richness,
+       xaxt = "n",
+       yaxt = "n",
+       ylim = c(0, ncol(comm) + 1),
+       xlab = "Site order",
+       ylab = "Cumulative number of species",
+       pch = 16, cex = 1.2,
+       main = "Site selecion based on the Rarity Algorithm")
+  axis(1, at = 1:nrow(comm),
+       labels = rwrSiteOrder)
+  axis(2, at = seq(0, ncol(comm), 5))
+  
+  lines(commAccum$sites, commAccum$richness)
+  
+  # Minimum set: minimum number of sites needed to represent all species
+  minimumSet = min(which(commAccum$richness == max(commAccum$richness)))
+  
+  abline(v = minimumSet, col = "blue")
+  text(0.25, 0.5, pos = 4, col = "blue",
+       paste0("Minimum set = ", minimumSet, " sites (",
+              round(minimumSet/nrow(comm)*100), "%)"))
+  
+  return(data.frame(total_sites = nrow(comm),
+                    minimum_set = minimumSet,
+                    percentage_sites = round(minimumSet/nrow(comm)*100)))
+  
+}

@@ -1,0 +1,51 @@
+############################################################
+### Species accumulation curve based on species richness ###
+############################################################
+
+richness_algo = function(x) {
+  
+  require(vegan)
+  
+  # Comm data
+  comm = x$community
+
+  # Replace row names with row numbers
+  rownames(comm) = 1:nrow(comm)
+
+  # Order sites in decreasing order of species richness
+  richOrder = comm[order(specnumber(comm),
+                         decreasing = TRUE), ]
+  
+  # Species accumulation curve based on species richness
+  commAccum = specaccum(richOrder,
+                        method = "collector")
+  plot(commAccum$sites, 
+       commAccum$richness,
+       xaxt = "n",
+       yaxt = "n",
+       ylim = c(0, ncol(comm) + 1),
+       xlab = "Site order",
+       ylab = "Cumulative number of species",
+       pch = 16, cex = 1.2,
+       main = "Site selecion based on the Richness Algorithm")
+  axis(1, at = 1:nrow(comm),
+       labels = as.numeric(rownames(richOrder)))
+  axis(2, at = seq(0, ncol(comm), 5))
+  
+  lines(commAccum$sites, commAccum$richness)
+  
+  # Minimum set: minimum number of sites needed to represent all species
+  minimumSet = min(which(commAccum$richness == max(commAccum$richness)))
+  
+  abline(v = minimumSet, col = "blue")
+  text(0.25, 1, pos = 4, col = "blue",
+       paste0("Minimum set = ", minimumSet, " sites (",
+              round(minimumSet/nrow(comm)*100), "%)"))
+  
+  return(data.frame(studyID = x$studyID,
+                    total_sites = nrow(comm),
+                    minimum_set = minimumSet,
+                    percentage_sites = round(minimumSet/nrow(comm)*100),
+                    algorithm = "richness"))
+  
+}

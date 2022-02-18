@@ -1,0 +1,50 @@
+##################################################
+### Quinn-Harrison species accumulation curves ###
+##################################################
+
+qh_curves = function(x) {
+  
+  require(vegan)
+  
+  # Comm data
+  comm = x$community
+  
+  # Order sites in increasing and decreasing order of patch area
+  small.to.large = comm[order(x$patch_area), ]
+  large.to.small = comm[order(-x$patch_area), ]
+  
+  # Species accumulation curves
+  small.to.large.curve = specaccum(small.to.large, method = "collector")
+  large.to.small.curve = specaccum(large.to.small, method = "collector")
+  
+  plot(cumsum(sort(x$patch_area)),
+       small.to.large.curve$richness,
+       xaxt = "n",
+       yaxt = "n",
+       ylim = c(0, ncol(comm) + 1),
+       xlab = "Cumulative area of habitat",
+       ylab = "Cumulative number of species",
+       main = "Quinn-Harrison curves",
+       pch = 16, cex = 1, col = "#d7191c")
+  axis(2, at = seq(0, ncol(comm), 5))
+  axis(1)
+  
+  lines(cumsum(sort(x$patch_area)),
+        small.to.large.curve$richness,
+        lwd = 2, col = "#d7191c")
+  
+  points(cumsum(sort(x$patch_area, decreasing = TRUE)),
+         pch = 16, cex = 1, col = "#2b83ba",
+         large.to.small.curve$richness)
+  
+  lines(cumsum(sort(x$patch_area, decreasing = TRUE)),
+        large.to.small.curve$richness,
+        lwd = 2, col = "#2b83ba")
+  
+  legend("bottomright", legend=c("Small to large",
+                                 "Large to small"),
+         col=c("#d7191c", "#2b83ba"),
+         lwd = 2, lty = c("solid", "solid"), cex = 1,
+         box.lty = 0)
+  
+}

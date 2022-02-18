@@ -40,7 +40,7 @@ greedy_algo = function(x) {
   minimumSet = min(which(commAccum$richness == max(commAccum$richness)))
   
   abline(v = minimumSet, col = "blue")
-  text(0.25, 0.5, pos = 4, col = "blue",
+  text(ncol(comm)-0.25, 1, pos = 2, col = "blue",
        paste0("Minimum set = ", minimumSet, " sites (",
               round(minimumSet/nrow(comm)*100), "%)"))
   

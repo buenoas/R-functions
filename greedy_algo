@@ -4,6 +4,8 @@
 
 greedy_algo = function(x) {
   
+  require(vegan)
+  
   # Comm data
   comm = x$community
   comm.rich = x$community

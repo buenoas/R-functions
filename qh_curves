@@ -22,9 +22,9 @@ qh_curves = function(x) {
        xaxt = "n",
        yaxt = "n",
        ylim = c(0, ncol(comm) + 1),
-       xlab = "Cumulative area of habitat",
+       xlab = "Cumulative patch area",
        ylab = "Cumulative number of species",
-       main = "Quinn-Harrison curves",
+       main = paste0("Quinn-Harrison curves\n", x$studyID),
        pch = 16, cex = 1, col = "#d7191c")
   axis(2, at = seq(0, ncol(comm), 5))
   axis(1)

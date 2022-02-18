@@ -49,6 +49,7 @@ rarity_algo = function(x) {
   return(data.frame(studyID = x$studyID,
                     total_sites = nrow(comm),
                     minimum_set = minimumSet,
-                    percentage_sites = round(minimumSet/nrow(comm)*100)))
+                    percentage_sites = round(minimumSet/nrow(comm)*100),
+                    algorithm = "rarity"))
   
 }

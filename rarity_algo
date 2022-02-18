@@ -4,6 +4,8 @@
 
 rarity_algo = function(x) {
   
+  require(vegan)
+  
   # Comm data
   comm = x$community
   comm.rwr = x$community

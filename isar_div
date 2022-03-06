@@ -1,0 +1,238 @@
+####################################################
+### FUNCTION TO CALCULATE ISAR DIVERSITY INDICES ###
+####################################################
+
+# This function calculates all the diversity indices described in Chase et al. (2019)
+# https://escholarship.org/uc/item/86b9971p
+
+# Diversity indices:
+# alpha_S_n
+# alpha_S_PIE
+# beta_S_n
+# beta_S_PIE
+# gamma_S_n
+# gamma_S_PIE
+# gamma_S_total
+
+# The data matrix must be organised as follow:
+# First column is site_id (island/fragment/patch name)
+# Second column is plot_id (a minimum of 2 plots per site is required)
+# Third column is site_area (island/fragment/patch size)
+# Remaining columns are species abundance data, measured as the number of individuals
+
+isar_div = function(dataset, effort = max, nboot = 1000) {
+  
+  # Load package
+  library(iNEXT)
+  
+  # Order rows alphabetically by site
+  dataset = dataset[order(dataset[, 1]), ]
+  
+  # Identify sites with only one survey plot
+  sites2remove = unique(dataset[, 1])[table(dataset[, 1]) == 1]
+  
+  # Identify sites with two or more survey plots 
+  sites2keep = is.na(match(dataset[, 1], sites2remove))
+  
+  # Keep sites with two or more survey plots
+  comm_env = dataset[sites2keep, ]
+  
+  
+  ###################
+  ### ALPHA SCALE ###
+  ###################
+  
+  alpha_comm = comm_env[, -c(1:3)]
+  
+  # Estimate reference n (effort measured as the number of individuals) for rarefaction and extrapolations
+  plot_effort = rowSums(alpha_comm)
+  max_effort = max(plot_effort)
+  min_effort = min(plot_effort)
+  min_effort_double = min_effort * 2 # double the lowest number of individuals
+  ref_effort = effort(max_effort, min_effort_double)
+  
+  # Rarefied number of species
+  # Transpose alpha_comm
+  alpha_comm_t = as.data.frame(t(alpha_comm))
+  
+  # Get reproducible results
+  set.seed(prod(dim(alpha_comm_t)))
+  
+  # Rarefaction curves
+  alpha_raref = iNEXT(alpha_comm_t,
+                      q = 0,
+                      datatype = "abundance",
+                      size = 1:ref_effort,
+                      se = TRUE,
+                      conf = 0.95,
+                      nboot = 10)
+  
+  # Calculation of alpha_S_n
+  alpha_S_n_plot = do.call(rbind,
+                           lapply(alpha_raref$iNextEst,
+                                  function(x)
+                                    x[nrow(x), ]))
+  
+  alpha_S_n_plot$site = comm_env[, 1]
+  
+  alpha_S_n = aggregate(alpha_S_n_plot$qD,
+                        by = list(alpha_S_n_plot$site),
+                        FUN = mean)
+  
+  rownames(alpha_S_n) = alpha_S_n$Group.1
+  alpha_S_n$Group.1 = NULL
+  colnames(alpha_S_n) = "alpha_S_n"
+  
+  alpha_S_n
+  
+  # Calculation of alpha_PIE and alpha_S_PIE
+  # Species richness when the number of individuals is 2
+  alpha_S_n2_plot = unlist(lapply(alpha_raref$iNextEst,
+                                  function(x)
+                                    subset(x, m == 2)$qD))
+  
+  alpha_S_n2_plot = as.data.frame(alpha_S_n2_plot)
+  
+  # alpha_PIE: slope at the base of the individual-based rarefaction curve
+  alpha_PIE_plot = apply(alpha_S_n2_plot, 1,
+                         function(x)
+                           lm(c(1, x) ~ c(1, 2))$coefficients[2])
+  
+  # alpha_S_PIE
+  alpha_S_PIE_plot = 1/(1-alpha_PIE_plot)
+  
+  alpha_S_PIE_plot_Inf = alpha_S_PIE_plot != Inf
+  
+  alpha_S_PIE = aggregate(alpha_S_PIE_plot[alpha_S_PIE_plot_Inf],
+                          by = list(alpha_S_n_plot$site[alpha_S_PIE_plot_Inf]),
+                          FUN = mean)
+  
+  rownames(alpha_S_PIE) = alpha_S_PIE$Group.1
+  alpha_S_PIE$Group.1 = NULL
+  colnames(alpha_S_PIE) = "alpha_S_PIE"
+  
+  alpha_S_PIE
+  
+  
+  ###################
+  ### GAMMA SCALE ###
+  ###################
+  
+  # Sum all the individuals recorded in each site
+  gamma_comm = aggregate(comm_env[, -c(1:3)],
+                         by = list(comm_env[, 1]),
+                         FUN = sum)
+  
+  rownames(gamma_comm) = gamma_comm$Group.1
+  gamma_comm$Group.1 = NULL
+  
+  # Transpose gamma_comm
+  gamma_comm_t = as.data.frame(t(gamma_comm))
+  
+  # Total gamma diversity (Chao1 species richness estimator)
+  gamma_S_total = ChaoRichness(gamma_comm_t,
+                               datatype = "abundance",
+                               conf = 0.95)$Estimator
+  
+  # Rarefied number of species
+  # Get reproducible results
+  set.seed(prod(dim(gamma_comm_t)))
+  
+  # Rarefaction curves
+  gamma_raref = iNEXT(gamma_comm_t,
+                      q = 0,
+                      datatype = "abundance",
+                      size = 1:ref_effort,
+                      se = TRUE,
+                      conf = 0.95,
+                      nboot = 10)
+  
+  # Calculation of gamma_S_n
+  gamma_S_n = do.call(rbind,
+                      lapply(gamma_raref$iNextEst,
+                             function(x)
+                               x[nrow(x), ]))
+  
+  gamma_S_n = data.frame(row.names = rownames(gamma_S_n),
+                         gamma_S_n = gamma_S_n$qD)
+  
+  gamma_S_n
+  
+  # Calculation of gamma_PIE and gamma_S_PIE
+  # Species richness when the number of individuals is 2
+  gamma_S_n2 = unlist(lapply(gamma_raref$iNextEst,
+                             function(x)
+                               subset(x, m == 2)$qD))
+  
+  gamma_S_n2 = as.data.frame(gamma_S_n2)
+  
+  # gamma_PIE: slope at the base of the individual-based rarefaction curve
+  gamma_PIE = apply(gamma_S_n2, 1,
+                    function(x)
+                      lm(c(1, x) ~ c(1, 2))$coefficients[2])
+  
+  # gamma_S_PIE
+  gamma_S_PIE = 1/(1-gamma_PIE)
+  
+  gamma_S_PIE
+  
+  
+  ##################
+  ### BETA SCALE ###
+  ##################
+  
+  # Calculation of beta_S_n
+  beta_S_n_list = list()
+  
+  for (i in 1:nrow(gamma_S_n)) {
+    
+    beta_S_n_list[[i]] = mean(gamma_S_n$gamma_S_n[i] / 
+                                subset(alpha_S_n_plot,
+                                       site == unique(alpha_S_n_plot$site)[i])$qD)
+    
+  }
+  
+  beta_S_n = as.numeric(do.call(rbind, beta_S_n_list))
+  
+  beta_S_n
+  
+  # Calculation of beta_S_PIE
+  alpha_S_PIE_plot_df = data.frame(site = alpha_S_n_plot$site[alpha_S_PIE_plot_Inf],
+                                   alpha_S_PIE_plot = 
+                                     alpha_S_PIE_plot[alpha_S_PIE_plot_Inf])
+  
+  beta_S_PIE_list = list()
+  
+  for (i in 1:ncol(gamma_comm_t)) {
+    
+    beta_S_PIE_list[[i]] = mean(gamma_S_PIE[i] / 
+                                  subset(alpha_S_PIE_plot_df,
+                                         site == unique(alpha_S_PIE_plot_df$site)[i])$alpha_S_PIE_plot)
+    
+  }
+  
+  beta_S_PIE = as.numeric(do.call(rbind, beta_S_PIE_list))
+  
+  beta_S_PIE
+  
+  ###########################
+  ### Combine the results ###
+  ###########################
+  
+  scales_div = data.frame(row.names = NULL,
+                          site = rownames(gamma_comm),
+                          site_area = unique(comm_env[, c(1, 3)])[, 2],
+                          alpha_S_n = alpha_S_n$alpha_S_n,
+                          alpha_S_PIE = alpha_S_PIE$alpha_S_PIE,
+                          beta_S_n = beta_S_n,
+                          beta_S_PIE = beta_S_PIE,
+                          gamma_S_n = gamma_S_n$gamma_S_n,
+                          gamma_S_PIE,
+                          gamma_S_total)
+  
+  return(scales_div)
+  
+}
+
+# Load the function in R
+# source("https://raw.githubusercontent.com/buenoas/R-functions/main/isar_div")

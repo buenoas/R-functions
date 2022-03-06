@@ -20,7 +20,7 @@
 # Third column is site_area (island/fragment/patch size)
 # Remaining columns are species abundance data, measured as the number of individuals
 
-isar_div = function(dataset, effort = max, nboot = 1000) {
+isar_div = function(dataset, effort = min, nboot = 1000) {
   
   # Load package
   library(iNEXT)

@@ -5,6 +5,8 @@
 # This function calculates all the diversity indices described in Chase et al. (2019)
 # https://escholarship.org/uc/item/86b9971p
 
+# ISAR: Island species-area relationship
+
 # Diversity indices:
 # alpha_S_n
 # alpha_S_PIE

@@ -16,13 +16,13 @@
 # gamma_S_PIE
 # gamma_S_total
 
-# The data matrix must be organised as follow:
+# The data matrix must be organised as below:
 # First column is site_id (island/fragment/patch name)
 # Second column is plot_id (a minimum of 2 plots per site is required)
 # Third column is site_area (island/fragment/patch size)
 # Remaining columns are species abundance data, measured as the number of individuals
 
-isar_div = function(dataset, effort = min, nboot = 1000) {
+isar_div = function(dataset, effort = min) {
   
   # Load package
   library(iNEXT)
@@ -67,7 +67,7 @@ isar_div = function(dataset, effort = min, nboot = 1000) {
                       size = 1:ref_effort,
                       se = TRUE,
                       conf = 0.95,
-                      nboot = 10)
+                      nboot = 1000)
   
   # Calculation of alpha_S_n
   alpha_S_n_plot = do.call(rbind,
@@ -147,7 +147,7 @@ isar_div = function(dataset, effort = min, nboot = 1000) {
                       size = 1:ref_effort,
                       se = TRUE,
                       conf = 0.95,
-                      nboot = 10)
+                      nboot = 1000)
   
   # Calculation of gamma_S_n
   gamma_S_n = do.call(rbind,

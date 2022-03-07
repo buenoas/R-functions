@@ -44,6 +44,7 @@ isar_div = function(dataset, effort = min) {
   ### ALPHA SCALE ###
   ###################
   
+  # Plot by species abundance matrix
   alpha_comm = comm_env[, -c(1:3)]
   
   # Estimate reference n (effort measured as the number of individuals) for rarefaction and extrapolations
@@ -85,8 +86,6 @@ isar_div = function(dataset, effort = min) {
   alpha_S_n$Group.1 = NULL
   colnames(alpha_S_n) = "alpha_S_n"
   
-  alpha_S_n
-  
   # Calculation of alpha_PIE and alpha_S_PIE
   # Species richness when the number of individuals is 2
   alpha_S_n2_plot = unlist(lapply(alpha_raref$iNextEst,
@@ -113,14 +112,13 @@ isar_div = function(dataset, effort = min) {
   alpha_S_PIE$Group.1 = NULL
   colnames(alpha_S_PIE) = "alpha_S_PIE"
   
-  alpha_S_PIE
-  
   
   ###################
   ### GAMMA SCALE ###
   ###################
   
-  # Sum all the individuals recorded in each site
+  # Site by species abundance matrix
+  # Sum all the individuals recorded across all the plots of each site
   gamma_comm = aggregate(comm_env[, -c(1:3)],
                          by = list(comm_env[, 1]),
                          FUN = sum)
@@ -158,8 +156,6 @@ isar_div = function(dataset, effort = min) {
   gamma_S_n = data.frame(row.names = rownames(gamma_S_n),
                          gamma_S_n = gamma_S_n$qD)
   
-  gamma_S_n
-  
   # Calculation of gamma_PIE and gamma_S_PIE
   # Species richness when the number of individuals is 2
   gamma_S_n2 = unlist(lapply(gamma_raref$iNextEst,
@@ -175,8 +171,6 @@ isar_div = function(dataset, effort = min) {
   
   # gamma_S_PIE
   gamma_S_PIE = 1/(1-gamma_PIE)
-  
-  gamma_S_PIE
   
   
   ##################
@@ -196,12 +190,10 @@ isar_div = function(dataset, effort = min) {
   
   beta_S_n = as.numeric(do.call(rbind, beta_S_n_list))
   
-  beta_S_n
-  
   # Calculation of beta_S_PIE
-  alpha_S_PIE_plot_df = data.frame(site = alpha_S_n_plot$site[alpha_S_PIE_plot_Inf],
-                                   alpha_S_PIE_plot = 
-                                     alpha_S_PIE_plot[alpha_S_PIE_plot_Inf])
+  alpha_S_PIE_plot_df = data.frame(
+    site = alpha_S_n_plot$site[alpha_S_PIE_plot_Inf],
+    alpha_S_PIE_plot = alpha_S_PIE_plot[alpha_S_PIE_plot_Inf])
   
   beta_S_PIE_list = list()
   
@@ -215,7 +207,6 @@ isar_div = function(dataset, effort = min) {
   
   beta_S_PIE = as.numeric(do.call(rbind, beta_S_PIE_list))
   
-  beta_S_PIE
   
   ###########################
   ### Combine the results ###

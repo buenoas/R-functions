@@ -22,7 +22,7 @@
 # Third column is site_area (island/fragment/patch size)
 # Remaining columns are species abundance data, measured as the number of individuals
 
-isar_div = function(dataset, effort = min) {
+isar_div = function(dataset) {
   
   # Load package
   library(iNEXT)
@@ -52,7 +52,7 @@ isar_div = function(dataset, effort = min) {
   max_effort = max(plot_effort)
   min_effort = min(plot_effort)
   min_effort_double = min_effort * 2 # double the lowest number of individuals
-  ref_effort = effort(max_effort, min_effort_double)
+  ref_effort = min(max_effort, min_effort_double)
   
   # Rarefied number of species
   # Transpose alpha_comm

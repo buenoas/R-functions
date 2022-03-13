@@ -2,23 +2,18 @@
 ### Species accumulation curve based on species complementarity ###
 ###################################################################
 
-greedy_algo = function(x) {
+greedy_algo = function(comm) {
   
   require(vegan)
   
-  # Comm data
-  comm = x$community
-  comm.rich = x$community
-  
   # Replace row names with row numbers
   rownames(comm) = 1:nrow(comm)
-  rownames(comm.rich) = 1:nrow(comm.rich)
   
   # Load the function "minimum.set" (by CS Dambros)
   source("https://raw.githubusercontent.com/csdambros/R-functions/master/minimum.set")
   
   # Order sites in decreasing order of additional species
-  richOrder = minimum.set(comm.rich)
+  richOrder = minimum.set(comm)
   
   # Species accumulation curve based on species complementarity
   commAccum = specaccum(richOrder,
@@ -46,8 +41,7 @@ greedy_algo = function(x) {
        paste0("Minimum set = ", minimumSet, " sites (",
               round(minimumSet/nrow(comm)*100), "%)"))
   
-  return(data.frame(studyID = x$studyID,
-                    total_sites = nrow(comm),
+  return(data.frame(total_sites = nrow(comm),
                     minimum_set = minimumSet,
                     percentage_sites = round(minimumSet/nrow(comm)*100),
                     algorithm = "greedy"))

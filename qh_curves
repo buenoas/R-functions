@@ -48,3 +48,7 @@ qh_curves = function(x) {
          box.lty = 0)
   
 }
+
+
+# Load the function in R
+# source("https://raw.githubusercontent.com/buenoas/R-functions/main/qh_curves")

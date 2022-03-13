@@ -2,23 +2,19 @@
 ### Species accumulation curve based on rarity-weighted richness ###
 ####################################################################
 
-rarity_algo = function(x) {
+rarity_algo = function(comm) {
   
   require(vegan)
-  
-  # Comm data
-  comm = x$community
-  comm.rwr = x$community
+  source("https://raw.githubusercontent.com/buenoas/R-functions/main/rwr")
   
   # Replace row names with row numbers
   rownames(comm) = 1:nrow(comm)
-  rownames(comm.rwr) = 1:nrow(comm.rwr)
   
   # Rarity-Weighted Richness per site
-  comm.rwr$rwrSite = rwr(comm.rwr)
+  comm$rwrSite = rwr(comm)
   
   # Order sites in decreasing order of rwr
-  rwrOrder = comm.rwr[order(comm.rwr$rwrSite,
+  rwrOrder = comm[order(comm$rwrSite,
                             decreasing = TRUE), ]
   rwrSiteOrder = as.numeric(rownames(rwrOrder))
   
@@ -48,10 +44,12 @@ rarity_algo = function(x) {
        paste0("Minimum set = ", minimumSet, " sites (",
               round(minimumSet/nrow(comm)*100), "%)"))
   
-  return(data.frame(studyID = x$studyID,
-                    total_sites = nrow(comm),
+  return(data.frame(total_sites = nrow(comm),
                     minimum_set = minimumSet,
                     percentage_sites = round(minimumSet/nrow(comm)*100),
                     algorithm = "rarity"))
   
 }
+
+# Load the function in R
+# source("https://raw.githubusercontent.com/buenoas/R-functions/main/rarity_algo")

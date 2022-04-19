@@ -1,0 +1,44 @@
+#######################################################
+### FUNCTION TO PRODUCE A SPECTROGRAM FROM WAV FILE ###
+#######################################################
+
+spectrogram = function(wav_file, threshold = -50) {
+  
+  require(tuneR)
+  require(seewave)
+  require(reshape2)
+  require(ggplot2)
+  
+  file = readWave(wav_file)
+  
+  x = spectro(file, plot = FALSE)
+  
+  y = x$amp
+  rownames(y) = x$freq
+  colnames(y) = x$time
+  
+  z = melt(y)
+  colnames(z) = c("freq", "time", "amp")
+  
+  z$binary = ifelse(z$amp > threshold, z$amp, threshold)
+  
+  ggplot(z,
+         aes(x = time,
+             y = freq,
+             fill = binary)) +
+    labs(x = "Time (s)",
+         y = "Frequency (kHz)",
+         fill = "Amplitude\n(dBFS)") +
+    geom_tile() +
+    scale_fill_viridis_c(na.value = "black",
+                         option = "inferno") +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(breaks = seq(min(z$freq), file@samp.rate/2, 1),
+                       expand = c(0, 0)) +
+    theme(axis.text = element_text(colour = "black"),
+          axis.ticks = element_line(colour = "black"))
+  
+}
+
+# Load the function in R
+# source("https://raw.githubusercontent.com/buenoas/R-functions/main/spectrogram")

@@ -1,5 +1,5 @@
 ##################################################################
-### Function to produce a sonogram (spectrogram) from WAV file ###
+### FUNCTION TO PRODUCE A SONOGRAM (SPECTROGRAM) FROM WAV FILE ###
 ##################################################################
 
 sonogram = function(wav_file, threshold = -50) {

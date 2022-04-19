@@ -2,7 +2,7 @@
 ### Function to produce a sonogram (spectrogram) from WAV file ###
 ##################################################################
 
-sonogram = function(wav_file, threshold = -50){
+sonogram = function(wav_file, threshold = -50) {
   
   require(seewave)
   require(reshape2)
@@ -35,3 +35,6 @@ sonogram = function(wav_file, threshold = -50){
                        expand = c(0, 0))
   
 }
+
+# Load the function in R
+# source("https://raw.githubusercontent.com/buenoas/R-functions/main/sonogram")

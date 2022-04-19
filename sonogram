@@ -31,7 +31,7 @@ sonogram = function(wav_file, threshold = -50) {
                          option = "inferno") +
     scale_x_continuous(breaks = seq(min(z$time), max(z$time), 1),
                        expand = c(0, 0)) +
-    scale_y_continuous(breaks = seq(min(z$freq), recording@samp.rate/2, 1),
+    scale_y_continuous(breaks = seq(min(z$freq), wav_file@samp.rate/2, 1),
                        expand = c(0, 0))
   
 }

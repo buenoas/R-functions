@@ -1,0 +1,37 @@
+##################################################################
+### Function to produce a sonogram (spectrogram) from WAV file ###
+##################################################################
+
+sonogram = function(wav_file, threshold = -50){
+  
+  require(seewave)
+  require(reshape2)
+  require(ggplot2)
+  
+  x = spectro(wav_file, plot = FALSE)
+  
+  y = x$amp
+  rownames(y) = x$freq
+  colnames(y) = x$time
+  
+  z = melt(y)
+  colnames(z) = c("freq", "time", "amp")
+  
+  z$binary = ifelse(z$amp > threshold, z$amp, threshold)
+  
+  ggplot(z,
+         aes(x = time,
+             y = freq,
+             fill = binary)) +
+    labs(x = "Time (hour of day)",
+         y = "Frequency (kHz)",
+         fill = "Amplitude\n(dBFS)") +
+    geom_tile() +
+    scale_fill_viridis_c(na.value = "black",
+                         option = "inferno") +
+    scale_x_continuous(breaks = seq(min(z$time), max(z$time), 1),
+                       expand = c(0, 0)) +
+    scale_y_continuous(breaks = seq(min(z$freq), recording@samp.rate/2, 1),
+                       expand = c(0, 0))
+  
+}

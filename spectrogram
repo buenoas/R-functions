@@ -9,9 +9,9 @@ spectrogram = function(wav_file, threshold = -50) {
   require(reshape2)
   require(ggplot2)
   
-  file = readWave(wav_file)
+  rec = readWave(wav_file)
   
-  x = spectro(file, plot = FALSE)
+  x = spectro(rec, plot = FALSE)
   
   y = x$amp
   rownames(y) = x$freq
@@ -22,10 +22,10 @@ spectrogram = function(wav_file, threshold = -50) {
   
   z$binary = ifelse(z$amp > threshold, z$amp, threshold)
   
-  ggplot(z,
-         aes(x = time,
-             y = freq,
-             fill = binary)) +
+  p = ggplot(z,
+             aes(x = time,
+                 y = freq,
+                 fill = binary)) +
     labs(x = "Time (s)",
          y = "Frequency (kHz)",
          fill = "Amplitude\n(dBFS)") +
@@ -33,10 +33,11 @@ spectrogram = function(wav_file, threshold = -50) {
     scale_fill_viridis_c(na.value = "black",
                          option = "inferno") +
     scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(breaks = seq(min(z$freq), max(z$freq), 1),
-                       expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
     theme(axis.text = element_text(colour = "black"),
           axis.ticks = element_line(colour = "black"))
+  
+  return(p)
   
 }
 

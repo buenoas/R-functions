@@ -33,7 +33,7 @@ spectrogram = function(wav_file, threshold = -50) {
     scale_fill_viridis_c(na.value = "black",
                          option = "inferno") +
     scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(breaks = seq(min(z$freq), file@samp.rate/2, 1),
+    scale_y_continuous(breaks = seq(min(z$freq), max(z$freq), 1),
                        expand = c(0, 0)) +
     theme(axis.text = element_text(colour = "black"),
           axis.ticks = element_line(colour = "black"))

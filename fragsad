@@ -53,3 +53,7 @@ fragsad = function(x) {
               studyID = x))
   
 }
+
+
+# Load the function in R
+# source("https://raw.githubusercontent.com/buenoas/R-functions/main/fragsad")

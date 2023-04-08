@@ -1,0 +1,16 @@
+#####################################################################################
+### Percentage of each land cover type per sample site for different buffer sizes ###
+#####################################################################################
+
+landcover = function(raster, sites, buffer){
+  
+  require(plyr)
+  
+  z = ldply(lapply(extract(raster, sites, buffer = buffer),
+                   function(x) c(table(x)/sum(table(x))*100)), rbind)
+  
+  z[is.na(z)] = 0
+  
+  return(z)
+  
+}

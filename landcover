@@ -14,3 +14,7 @@ landcover = function(raster, sites, buffer){
   return(z)
   
 }
+
+
+# Load the function in R
+# source("https://raw.githubusercontent.com/buenoas/R-functions/main/landcover")

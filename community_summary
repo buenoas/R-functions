@@ -26,7 +26,7 @@ gg_hm = df_hm %>%
   geom_tile(color = "white",
             linewidth = 0.5,
             linetype = 1) + 
-  scale_fill_gradient(low = "grey90", high = "black") +
+  scale_fill_gradient(low = "grey90", high = "#499B75") +
   theme_classic(base_size = 10) +
   theme(axis.line = element_blank(),
         axis.ticks = element_blank(),
@@ -44,7 +44,7 @@ gg_rows = df_hm %>%
   group_by(rows) %>% 
   ggplot(aes(x = rows,y = value)) + 
   labs(y = "Species richness") +
-  geom_col(fill = "black") +
+  geom_col(fill = "#499B75") +
   scale_y_continuous(breaks = seq(0, 10, 2)) +
   theme_classic(base_size = 10) +
   theme(axis.title.x = element_blank(),
@@ -60,7 +60,7 @@ gg_cols = df_hm %>%
   group_by(cols) %>%
   ggplot(aes(x = cols, y = value/sum(value) * 100))+ 
   labs(y = "Sites occupied (%)") +
-  geom_col(fill = "black") +
+  geom_col(fill = "#499B75") +
   coord_flip() +
   theme_classic() +
   theme(axis.title.y = element_blank(),

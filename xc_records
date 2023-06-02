@@ -1,0 +1,78 @@
+######################################################################################################
+### CODIGO PARA EXTRAIR AS COORDENADAS GEOGRAFICAS DE TODOS OS REGISTROS DE ESPECIES DO XENO-CANTO ###
+######################################################################################################
+
+# Carrega os pacotes
+library(stringr)
+library(warbleR)
+
+# Le a pagina com a lista de especies do xeno-canto
+x = readLines("https://xeno-canto.org/collection/species/all")
+
+# Extrai a lista de especies
+y = str_squish(x)
+z = y[grepl("<td>", y)]
+w = word(z, 2, sep = "<td>")
+q = word(w, 1, sep = "</td>")
+r = sort(unique(q))[-1]
+s = r[-which(grepl("Extinct", r))]
+
+# Extrai as coordenadas dos registros das especies
+xc_list = list()
+
+for (i in 1:length(s)) {
+  
+  records =
+    query_xc(qword = s[i])
+  
+  records_coords =
+    records[, c("Genus",
+                "Specific_epithet",
+                "Subspecies",
+                "English_name",
+                "Country",
+                "Longitude",
+                "Latitude",
+                "Date",
+                "Uploaded")]
+  
+  records_coords$Scientific_name =
+    str_squish(
+      paste(records_coords$Genus,
+            records_coords$Specific_epithet,
+            records_coords$Subspecies))
+  
+  records_coords$Species =
+    word(records_coords$Scientific_name, 1, 2)
+  
+  records_coords =
+    records_coords[, c("Scientific_name",
+                       "Species",
+                       "English_name",
+                       "Country",
+                       "Longitude",
+                       "Latitude",
+                       "Date",
+                       "Uploaded")]
+  
+  records_coords = na.omit(records_coords)
+  
+  xc_list[[i]] = records_coords
+  
+  print(i)
+  
+}
+
+# Converte lista em data frame
+xc = do.call(rbind, xc_list)
+
+# Visualiza parte dos resultados
+rbind(head(xc),
+      tail(xc))
+
+# Salva os resultados
+write.csv(xc, "xeno_canto_records.csv", row.names = FALSE)
+
+# Visualiza a distribuicao dos registros no mundo
+plot(ne_countries(type = "countries"))
+points(xc$Longitude, xc$Latitude, col = "red")

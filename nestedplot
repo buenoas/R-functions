@@ -41,8 +41,7 @@ nestedplot = function(x) {
          y = NULL) +
     
     geom_tile(color = "white",
-              linewidth = 0.5,
-              linetype = 1) +
+              linewidth = 0.5) +
     
     scale_fill_gradient(low = "grey90", high = "black") +
     

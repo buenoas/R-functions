@@ -4,7 +4,7 @@
 
 nestedplot = function(x) {
   
-  # Pacotes
+  # Carrega os pacotes
   require(reshape2)
   require(ggplot2)
   

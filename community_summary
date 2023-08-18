@@ -1,11 +1,20 @@
-# Load the required packages
-library(reshape2)
-library(dplyr)
-library(ggplot2)
-library(egg)
+############################################
+### FUNCTION TO SUMMARIZE COMMUNITY DATA ###
+#############################################
+
+# This function generates a composite figure containing three graphs that collectively describe community data:
+# Nestedness plot
+# Species richness per site
+# Proportion of sites occupied by each species
 
 # Define a function for community summary
 community_summary = function(x) {
+  
+  # Load the required packages
+  require(reshape2)
+  require(dplyr)
+  require(ggplot2)
+  require(egg)
   
   # Order the data like a nestedness plot
   x = x[order(rowSums(ifelse(x > 0, 1, 0)),
@@ -103,5 +112,8 @@ community_summary = function(x) {
          width = 300, height = 150, units = "mm")
 }
 
-# Call the comm_summ function with your data matrix 'x'
+# Load the function in R
+# source("https://raw.githubusercontent.com/buenoas/R-functions/main/community_summary")
+
+# Call the community_summary function with your data matrix 'x'
 # For example: community_summary(your_data_matrix)

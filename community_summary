@@ -1,91 +1,107 @@
-library(gridExtra)
-library(cowplot)
-library(egg)
+# Load the required packages
+library(reshape2)
 library(dplyr)
+library(ggplot2)
+library(egg)
 
-# generate some data
-df_hm = cbind(
-  expand.grid(
-    rows = sample(letters, 10), 
-    cols = sample(LETTERS, 10)
-  ), 
-  value = rnorm(100)
-)
-
-x.melt$value = x.melt$incidence
-x.melt$incidence = NULL
-
-colnames(x.melt) = c("rows", "cols", "value")
-
-df_hm = x.melt
-
-# plot the heatmap
-gg_hm = df_hm %>% 
-  ggplot(aes(x = rows, y = cols, fill = value)) + 
-  labs(x = NULL, y = NULL) +
-  geom_tile(color = "white",
-            linewidth = 0.5,
-            linetype = 1) + 
-  scale_fill_gradient(low = "grey90", high = "#499B75") +
-  theme_classic(base_size = 10) +
-  theme(axis.line = element_blank(),
-        axis.ticks = element_blank(),
-        axis.text.x = element_text(colour = "black",
-                                   angle = 90,
-                                   hjust = 1,
-                                   vjust = 0.5,
-                                   size = 6*1.2),
-        axis.text.y = element_text(colour = "black",
-                                   face = "italic",
-                                   size = 7*1.2),
-        legend.position = "none")
-
-gg_rows = df_hm %>% 
-  group_by(rows) %>% 
-  ggplot(aes(x = rows,y = value)) + 
-  labs(y = "Species richness") +
-  geom_col(fill = "#499B75") +
-  scale_y_continuous(breaks = seq(0, 10, 2)) +
-  theme_classic(base_size = 10) +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        axis.line.x = element_blank(),
-        axis.title.y = element_text(colour = "black"),
-        axis.text.y = element_text(colour = "black"),
-        axis.line.y = element_line(linewidth = 2/3),
-        axis.ticks.y = element_line(linewidth = 1/3))
-
-gg_cols = df_hm %>% 
-  group_by(cols) %>%
-  ggplot(aes(x = cols, y = value))+ 
-  labs(y = "Sites occupied") +
-  geom_col(fill = "#499B75") +
-  scale_y_continuous(breaks = seq(0, 12, 2)) +
-  coord_flip() +
-  theme_classic() +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        axis.line.y = element_blank(),
-        axis.title.x = element_text(colour = "black"),
-        axis.text.x = element_text(colour = "black"),
-        axis.line.x = element_line(linewidth = 1/3),
-        axis.ticks.x = element_line(linewidth = 1/3))
-
-gg_empty = df_hm %>% 
-  ggplot(aes(x = cols, y = value)) +
-  geom_blank() +
-  theme_classic() +
-  theme(axis.text = element_blank(),
-        axis.title = element_blank(),
-        line = element_blank(),
-        panel.background = element_blank())
-
-gg = 
-  ggarrange(
+# Define a function for community summary
+comm_summ = function(x) {
+  
+  # Order the data like a nestedness plot
+  x = x[order(rowSums(ifelse(x > 0, 1, 0)),
+              rowSums(x)),
+        order(colSums(ifelse(x > 0, 1, 0)),
+              colSums(x))]
+  
+  # Add row id
+  x$id = rownames(x)
+  
+  # Convert the matrix into the long table format
+  x.melt = melt(x)
+  
+  # Convert abundance data into incidence data
+  x.melt$value = ifelse(x.melt$value > 0, 1, 0)
+  
+  # Rename columns
+  colnames(x.melt) = c("rows", "cols", "value")
+  
+  # Convert rows to a factor with proper levels
+  x.melt$rows = factor(x.melt$rows,
+                       levels = rownames(x))
+  
+  # Plot the heatmap
+  gg_hm = x.melt %>% 
+    ggplot(aes(x = rows, y = cols, fill = value)) + 
+    labs(x = NULL, y = NULL) +
+    geom_tile(color = "white",
+              linewidth = 0.5,
+              linetype = 1) + 
+    scale_fill_gradient(low = "grey90", high = "#499B75") +
+    theme_classic(base_size = 10) +
+    theme(axis.line = element_blank(),
+          axis.ticks = element_blank(),
+          axis.text.x = element_text(colour = "black",
+                                     angle = 90,
+                                     hjust = 1,
+                                     vjust = 0.5,
+                                     size = 6 * 1.2),
+          axis.text.y = element_text(colour = "black",
+                                     face = "italic",
+                                     size = 7 * 1.2),
+          legend.position = "none")
+  
+  # Create a plot for species richness by rows
+  gg_rows = x.melt %>% 
+    group_by(rows) %>% 
+    ggplot(aes(x = rows, y = value)) + 
+    labs(y = "Species richness") +
+    geom_col(fill = "#499B75") +
+    theme_classic(base_size = 10) +
+    theme(axis.title.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.line.x = element_blank(),
+          axis.title.y = element_text(colour = "black"),
+          axis.text.y = element_text(colour = "black"),
+          axis.line.y = element_line(linewidth = 2/3),
+          axis.ticks.y = element_line(linewidth = 1/3))
+  
+  # Create a plot for sites occupied by columns
+  gg_cols = x.melt %>% 
+    group_by(cols) %>%
+    ggplot(aes(x = cols, y = value)) + 
+    labs(y = "Sites occupied") +
+    geom_col(fill = "#499B75") +
+    coord_flip() +
+    theme_classic() +
+    theme(axis.title.y = element_blank(),
+          axis.text.y = element_blank(),
+          axis.ticks.y = element_blank(),
+          axis.line.y = element_blank(),
+          axis.title.x = element_text(colour = "black"),
+          axis.text.x = element_text(colour = "black"),
+          axis.line.x = element_line(linewidth = 1/3),
+          axis.ticks.x = element_line(linewidth = 1/3))
+  
+  # Create an empty plot for spacing
+  gg_empty = x.melt %>% 
+    ggplot(aes(x = cols, y = value)) +
+    geom_blank() +
+    theme_classic() +
+    theme(axis.text = element_blank(),
+          axis.title = element_blank(),
+          line = element_blank(),
+          panel.background = element_blank())
+  
+  # Arrange all the plots
+  gg = ggarrange(
     gg_rows, gg_empty, gg_hm, gg_cols,
     nrow = 2, ncol = 2, widths = c(3, 1), heights = c(1, 3))
+  
+  # Save the final plot
+  ggsave(gg, filename = "comm_summary.jpg", dpi = 900,
+         width = 300, height = 150, units = "mm")
+}
 
-ggsave(gg, filename = "comm_summary.jpg",  dpi = 900,
-       width = 300, height = 150, units = "mm")
+# Call the comm_summ function with your data matrix 'x'
+# For example: comm_summ(your_data_matrix)

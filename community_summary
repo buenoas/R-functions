@@ -17,8 +17,8 @@ community_summary = function(x) {
   require(egg)
   
   # Order the data like a nestedness plot
-  x = x[order(rowSums(ifelse(x > 0, 1, 0)),
-              rowSums(x)),
+  x = x[order(-rowSums(ifelse(x > 0, 1, 0)),
+              -rowSums(x)),
         order(colSums(ifelse(x > 0, 1, 0)),
               colSums(x))]
   

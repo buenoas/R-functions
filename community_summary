@@ -5,7 +5,7 @@ library(ggplot2)
 library(egg)
 
 # Define a function for community summary
-comm_summ = function(x) {
+community_summary = function(x) {
   
   # Order the data like a nestedness plot
   x = x[order(rowSums(ifelse(x > 0, 1, 0)),
@@ -104,4 +104,4 @@ comm_summ = function(x) {
 }
 
 # Call the comm_summ function with your data matrix 'x'
-# For example: comm_summ(your_data_matrix)
+# For example: community_summary(your_data_matrix)

@@ -45,7 +45,7 @@ community_summary = function(x) {
     geom_tile(color = "white",
               linewidth = 0.5,
               linetype = 1) + 
-    scale_fill_gradient(low = "grey90", high = "grey10") +
+    scale_fill_gradient(low = "grey90", high = "#499B75") +
     theme_classic(base_size = 10) +
     theme(axis.line = element_blank(),
           axis.ticks = element_blank(),
@@ -64,7 +64,7 @@ community_summary = function(x) {
     group_by(rows) %>% 
     ggplot(aes(x = rows, y = value)) + 
     labs(y = "Species richness") +
-    geom_col(fill = "grey10") +
+    geom_col(fill = "#499B75") +
     theme_classic(base_size = 10) +
     theme(axis.title.x = element_blank(),
           axis.text.x = element_blank(),
@@ -80,7 +80,7 @@ community_summary = function(x) {
     group_by(cols) %>%
     ggplot(aes(x = cols, y = value)) + 
     labs(y = "Sites occupied") +
-    geom_col(fill = "grey10") +
+    geom_col(fill = "#499B75") +
     coord_flip() +
     theme_classic() +
     theme(axis.title.y = element_blank(),

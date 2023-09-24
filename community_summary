@@ -5,7 +5,7 @@
 # This function generates a composite figure containing three graphs that collectively describe community data:
 # Nestedness plot
 # Species richness per site
-# Proportion of sites occupied by each species
+# Proportion of sites occupied per species
 
 # Define a function for community summary
 community_summary = function(x) {

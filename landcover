@@ -5,6 +5,7 @@
 landcover = function(raster, sites, buffer){
   
   require(plyr)
+  require(raster)
   
   z = ldply(lapply(extract(raster, sites, buffer = buffer),
                    function(x) c(table(x)/sum(table(x))*100)), rbind)

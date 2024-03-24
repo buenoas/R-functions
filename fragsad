@@ -39,19 +39,27 @@ fragsad = function(x) {
   # Patch size (area)
   area = as.numeric(dat$site_size[match(rownames(dat.mx), dat$site_id)])
   
+  # Species group (taxon)
+  taxon = unique(subset(fragsad.metadata, refshort == x)$taxa)
+  
+  # Habitat type
+  habitat = unique(subset(fragsad.metadata, refshort == x)$biome)
+  
   # Matrix category
   matrix = unique(subset(fragsad.metadata, refshort == x)$matrix_category)
   
-  # Species groups (taxon)
-  taxon = unique(subset(fragsad.metadata, refshort == x)$taxa)
-  
-  return(list(community = dat.mx,
-              species_richness = richness,
-              patch_area = area,
-              taxon = taxon,
-              matrix = matrix,
-              studyID = x))
-  
+  # Country
+  country = unique(subset(fragsad.metadata, refshort == x)$country
+                   
+                   return(list(community = dat.mx,
+                               species_richness = richness,
+                               patch_area = area,
+                               taxon = taxon,
+                               habitat = habitat,
+                               matrix = matrix,
+                               country = country
+                               studyID = x))
+                   
 }
 
 

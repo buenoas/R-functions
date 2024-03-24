@@ -49,17 +49,17 @@ fragsad = function(x) {
   matrix = unique(subset(fragsad.metadata, refshort == x)$matrix_category)
   
   # Country
-  country = unique(subset(fragsad.metadata, refshort == x)$country
-                   
-                   return(list(community = dat.mx,
-                               species_richness = richness,
-                               patch_area = area,
-                               taxon = taxon,
-                               habitat = habitat,
-                               matrix = matrix,
-                               country = country
-                               studyID = x))
-                   
+  country = unique(subset(fragsad.metadata, refshort == x)$country)
+  
+  return(list(community = dat.mx,
+              species_richness = richness,
+              patch_area = area,
+              taxon = taxon,
+              habitat = habitat,
+              matrix = matrix,
+              country = country,
+              studyID = x))
+  
 }
 
 

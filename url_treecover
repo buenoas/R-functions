@@ -49,8 +49,8 @@ url_treecover <- function(x) {
   hemisphere_lon <- ifelse(x[, 1] >= 0, "E", "W")
   hemisphere_lat <- ifelse(x[, 2] >= 0, "N", "S")
   
-  # Create unique suffixes for the raster files
-  suffix <- unique(paste0(tile_y, hemisphere_lat, "_", tile_x, hemisphere_lon, ".tif"))
+  # Create suffixes for the raster files
+  suffix <- paste0(tile_y, hemisphere_lat, "_", tile_x, hemisphere_lon, ".tif")
   
   # Adjust the hemisphere for tiles at the Equator
   suffix <- gsub("00S_", "00N_", suffix)

@@ -1,0 +1,65 @@
+########################################################################
+### FUNCTION TO FIND THE RASTER TILE OF GLOBAL FOREST CHANGE PRODUCT ###
+########################################################################
+
+#' Generate URLs for Tree Cover Raster Tiles
+#'
+#' This function generates URLs for accessing specific tree cover raster tiles
+#' from the Global Forest Change dataset (version 1.11). The URLs are based 
+#' on the given longitude and latitude coordinates.
+#'
+#' @param x A data frame or matrix with two columns: Longitude and Latitude.
+#'          The function assumes the first column is Longitude and the second is Latitude.
+#'
+#' @return A character vector containing URLs to the tree cover raster tiles.
+#' @examples
+#' # Example data
+#' xy <- data.frame(Longitude = c(-120, -110, 35), Latitude = c(45, 50, -30))
+#' url_treecover(xy)
+#'
+#' @export
+
+url_treecover <- function(x) {
+  
+  # Ensure x is a data frame or matrix with at least two columns
+  if (!is.data.frame(x) && !is.matrix(x)) {
+    stop("Input x must be a data frame or matrix.")
+  }
+  if (ncol(x) < 2) {
+    stop("Input x must have at least two columns: Longitude and Latitude.")
+  }
+  
+  # Define the tile size in degrees
+  tile_size <- 10
+  
+  # Calculate longitude tile intervals
+  tile_x <- as.integer(x[, 1])
+  tile_x <- ifelse(tile_x < 0, tile_x - tile_size, tile_x)
+  tile_x <- as.integer(tile_x / tile_size) * tile_size
+  tile_x <- sprintf("%03d", abs(tile_x))
+  
+  # Calculate latitude tile intervals
+  tile_y <- as.integer(x[, 2])
+  tile_y <- ifelse(tile_y > 0, tile_y + tile_size, tile_y)
+  tile_y <- as.integer(tile_y / tile_size) * tile_size
+  tile_y <- sprintf("%02d", abs(tile_y))
+  
+  # Determine hemisphere labels for longitude and latitude
+  hemisphere_lon <- ifelse(x[, 1] >= 0, "E", "W")
+  hemisphere_lat <- ifelse(x[, 2] >= 0, "N", "S")
+  
+  # Create unique suffixes for the raster files
+  suffix <- unique(paste0(tile_y, hemisphere_lat, "_", tile_x, hemisphere_lon, ".tif"))
+  
+  # Adjust the hemisphere for tiles at the Equator
+  suffix <- gsub("00S_", "00N_", suffix)
+  
+  # Construct and return the URLs for the tree cover raster files
+  urls <- paste0("https://storage.googleapis.com/earthenginepartners-hansen/GFC-2023-v1.11/Hansen_GFC-2023-v1.11_treecover2000_", suffix)
+  
+  return(urls)
+  
+}
+
+# Load the function in R
+# source("https://raw.githubusercontent.com/buenoas/R-functions/main/url_treecover")

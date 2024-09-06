@@ -14,7 +14,8 @@
 #' @return A character vector containing URLs to the tree cover raster tiles.
 #' @examples
 #' # Example data
-#' xy <- data.frame(Longitude = c(-120, -110, 35), Latitude = c(45, 50, -30))
+#' xy <- data.frame(Longitude = c(-53.6269, -59.9229, 114.3721),
+#'                  Latitude = c(-29.4373, -2.9633, 0.7885))
 #' url_treecover(xy)
 #'
 #' @export

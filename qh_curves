@@ -7,7 +7,8 @@ qh_curves = function(x) {
   require(vegan)
   
   # Comm data
-  comm = x$community
+  #comm = x$community
+  comm = x[, -ncol(x)]
   
   # Order sites in increasing and decreasing order of patch area
   small.to.large = comm[order(x$patch_area), ]
@@ -49,6 +50,12 @@ qh_curves = function(x) {
   
 }
 
+
+# How to use the function
+data("dune")
+dune$patch_area = rnorm(nrow(dune), mean = 10, sd = 1)
+
+qh_curves(dune)
 
 # Load the function in R
 # source("https://raw.githubusercontent.com/buenoas/R-functions/main/qh_curves")
